@@ -15,13 +15,8 @@ app.post('/tracked-object', function(req, res) {
 	res.send('/tracked-object/' + id);
 });
 
-app.get('/tracked-object/*', function(req, res) {
-	res.send(trackedObjects);
-});
-
-app.get('/tracked-object/:id', function(req, res) {
-	res.send(trackedObjects[req.params['id']]);
-});
+app.get('/tracked-object/*', function(req, res) { res.send(trackedObjects); }); 
+app.get('/tracked-object/:id', function(req, res) { res.send(trackedObjects[req.params['id']]); });
 
 app.put('/tracked-object/:id', function(req, res) {
 	trackedObjects[req.params['id']] = req.body;
