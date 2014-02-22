@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>loctrac</title>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+</head>
+<body>
+
+<h1>loctrac tracked object simulator</h1>
+<p>This page will simulate a client that has requested tracking and is wandering about in the real world. Future versions of this could replay a particular route, possibly with parameterized strategies to modify the route. This version, however, has the simple strategy of moving forward more often than it changes its bearing.</p>
+<form action="tracked-object" method="post">
+<input type="submit">
+</form>
+<h2>tracked objects</h2>
+<div id="tracked">
+</div>
+<script>
+var lat = 35.818889;
+var lon = -78.644722;
+var bearing = 1;
+
+// FIXME For some reason, this moves all latitudes close to the North pole
+function move(d, θ) {
+	// borrowed from http://www.movable-type.co.uk/scripts/latlong.html#ortho-dest
+	// Formula:
+	//   φ2 = asin( sin(φ1)*cos(d/R) + cos(φ1)*sin(d/R)*cos(θ) )
+	//   λ2 = λ1 + atan2( sin(θ)*sin(d/R)*cos(φ1), cos(d/R)−sin(φ1)*sin(φ2) )
+	// Where: 
+	//   φ is latitude
+	//   λ is longitude,
+	//   θ is the bearing (in radians, clockwise from north),
+	//   d is the distance travelled,
+	//   R is the earth’s radius (d/R is the angular distance, in radians)
+	var R = 6371; // earth's mean radius in km
+	var latnew = Math.asin(Math.sin(lat)*Math.cos(d/R) + Math.cos(lat)*Math.sin(d/R)*Math.cos(θ));
+	var lonnew = lon + Math.atan2(Math.sin(θ)*Math.sin(d/R)*Math.cos(lat), Math.cos(d/R)-Math.sin(lat)*Math.sin(latnew));
+
+	lat = latnew;
+	lon = lonnew;
+
+	$('#tracked').html([lat,lon].join(','));
+}
+
+function wander() {
+	move(0.1, bearing);
+}
+
+setInterval(wander, 200);
+</script>
+</body>
+</html>
