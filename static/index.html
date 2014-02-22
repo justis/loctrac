@@ -2,11 +2,22 @@
 <html>
 <head>
 <title>loctrac</title>
+<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
 </head>
 <body>
-<h1>loctrac</h1>
-<form action="tracked-object" method="post">
-<input type="submit">
-</form>
+
+<h1>loctrac object tracker</h1>
+<p>The list below will be updated when tracked objects change. While testing, you may wish to <a href="simulator" target="_blank">simulate a wandering object</a>.
+<h2>tracked objects</h2>
+<div id="tracked">
+</div>
+
+<script>
+function updateTrackedObjectsDisplay() {
+	$('#tracked').load('tracked-object/*');
+}
+setInterval(updateTrackedObjectsDisplay, 500);
+</script>
+
 </body>
 </html>

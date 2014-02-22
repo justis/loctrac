@@ -7,13 +7,16 @@ var id = 0;
 var trackedObjects = {
 };
 
-app.get('/', function(req, res) {
-  res.sendfile('static/index.html');
-});
+app.get('/', function(req, res) { res.sendfile('static/index.html'); });
+app.get('/simulator', function(req, res) { res.sendfile('static/simulator.html'); });
 
 app.post('/tracked-object', function(req, res) {
 	trackedObjects['' + id++] = req.body;
 	res.send('/tracked-object/' + id);
+});
+
+app.get('/tracked-object/*', function(req, res) {
+	res.send(trackedObjects);
 });
 
 app.get('/tracked-object/:id', function(req, res) {
