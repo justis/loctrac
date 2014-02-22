@@ -2,7 +2,8 @@
 <html>
 <head>
 <title>loctrac</title>
-<script src="http://code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/json2/20130526/json2.min.js"></script>
 </head>
 <body>
 
@@ -17,7 +18,10 @@
 <script>
 var lat = 35.818889;
 var lon = -78.644722;
-var bearing = 1;
+var bearing = 1; // bearing, in radians
+var velocity = 0.01; // km per tick
+var tick = 500; // refresh rate, in ms
+var turnThreshold = 0.9;
 
 // FIXME For some reason, this moves all latitudes close to the North pole
 function move(d, θ) {
@@ -38,14 +42,42 @@ function move(d, θ) {
 	lat = latnew;
 	lon = lonnew;
 
-	$('#tracked').html([lat,lon].join(','));
+	$('#tracked').trigger('move');
 }
 
 function wander() {
-	move(0.1, bearing);
+	if (Math.random() > turnThreshold) bearing = (bearing + Math.random()) % Math.PI;
+	move(velocity, bearing);
 }
 
-setInterval(wander, 200);
+$(function() {
+	// create new tracked object
+	$.ajax({
+		url: 'tracked-object',
+		method: 'post',
+		data: '',
+		success: function(trackedObjectURL) {
+			// put location on move
+			$('#tracked').on('move', function() {
+				$.ajax({
+					url: trackedObjectURL,
+					method: 'put',
+					contentType: 'application/json',
+					data: JSON.stringify([window.lat,window.lon])
+				});
+			});
+		}
+	});
+
+	// update display on move
+	$('#tracked').on('move', function() {
+		$(this).html([bearing,lat,lon].join(','));
+	});
+
+	wander();
+	window.ticker = setInterval(wander, tick);
+});
+
 </script>
 </body>
 </html>
